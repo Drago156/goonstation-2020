@@ -918,6 +918,101 @@ datum
 						D.reagents.add_reagent("blackpowder", 5, null)
 				return
 
+		combustible/sea4
+			name = "sea4"
+			id = "sea4"
+			description = "A volatile precision blasting explosive."
+			reagent_state = SOLID
+			fluid_r = 0
+			fluid_g = 0
+			fluid_b = 55
+			volatility = 2.5
+			transparency = 255
+			depletion_rate = 0.05
+			penetrates_skin = 1 // think of it as just being all over them i guess
+			var/static/reaction_count = 0
+
+			reaction_temperature(exposed_temperature, exposed_volume)
+				if(src.reacting)
+					return
+				if(exposed_temperature > T0C + 200)
+					src.reacting = 1
+					var/list/covered = holder.covered_turf()
+
+					for(var/turf/location in covered)
+						var/our_amt = holder.get_reagent_amount(src.id) / covered.len
+
+						if (our_amt < 10 && covered.len > 5)
+							if (prob(min(covered.len/3,85)))
+								continue
+
+						var/datum/effects/system/spark_spread/s = unpool(/datum/effects/system/spark_spread)
+						s.set_up(2, 1, location)
+						s.start()
+						SPAWN_DBG(rand(5,15))
+							if(!holder || !holder.my_atom) return // runtime error fix
+							switch(our_amt)
+								if(0 to 5)
+									holder.my_atom.visible_message("<b>[holder.my_atom] The sea4 buzzes!</b>")
+									if (covered.len < 5 || prob(5))
+										var/datum/effects/system/bad_smoke_spread/smoke = new /datum/effects/system/bad_smoke_spread()
+										smoke.set_up(1, 0, location)
+										smoke.start()
+									explosion(holder.my_atom, location, -1, -1, pick(0,1), 1)
+								if(6 to 40)
+									holder.my_atom.visible_message("<b>The sea4 detonates!</b>")
+									explosion_new(holder.my_atom, location, 11,brisance=0.35)
+									if (covered.len > 1)
+										holder.remove_reagent(id, our_amt)
+									else
+										holder.del_reagent(id)
+								if(41 to 70)
+									holder.my_atom.visible_message("<b>[holder.my_atom] The sea4 buzzes violently!</b>")
+									fireflash(location,0)
+									explosion_new(holder.my_atom, location, 50,brisance=0.5)
+									createSomeBees()
+									if (covered.len > 1)
+										holder.remove_reagent(id, our_amt)
+									else
+										holder.del_reagent(id)
+									SPAWN_DBG(2 SECONDS)
+										createSomeBees(location)
+								if(71 to INFINITY)
+									holder.my_atom.visible_message("<span style=\"color:red\"><b>[holder.my_atom] explodes into a shower of bees!</b></span>")
+									explosion_new(holder.my_atom, location, 100,brisance=0.3)
+									if (covered.len > 1)
+										holder.remove_reagent(id, our_amt)
+									else
+										holder.del_reagent(id)
+									SPAWN_DBG(2 SECONDS)
+										createSomeBees(location)
+										createSomeBees(location)
+										createSomeBees(location)
+
+			reaction_obj(var/obj/O, var/volume)
+				src = null
+				return
+
+			reaction_turf(var/turf/T, var/volume)
+				src = null
+				if(!istype(T, /turf/space))
+					//if(volume >= 5)
+					if(!locate(/obj/decal/cleanable/dirt) in T)
+						var/obj/decal/cleanable/dirt/D = make_cleanable(/obj/decal/cleanable/dirt,T)
+						D.name = "sea4"
+						D.desc = "Uh oh. Someone better clean this up!"
+						if(!D.reagents) D.create_reagents(10)
+						D.reagents.add_reagent("sea4", 5, null)
+				return
+
+			proc/createSomeBees(var/turf/T as turf)
+				fucking_critter_bullshit_fuckcrap_limiter(reaction_count)
+				if (!T)
+					return
+				//if (!locate(/obj/critter) in T )
+				new /obj/critter/domestic_bee/sea(T)
+
+
 		combustible/nitrogentriiodide
 			//This is the parent and should not be spawned
 			name = "Nitrogen Triiodide"
