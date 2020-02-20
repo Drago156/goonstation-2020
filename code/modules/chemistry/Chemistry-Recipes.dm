@@ -3884,7 +3884,14 @@ datum
 			result_amount = 3
 			mix_phrase = "A strange green goopy liquid forms in the container."
 
-
+		sea4
+			name = "sea4"
+			id = "sea4"
+			result = "sea4"
+			required_reagents = list("blackpowder" = 1, "seabreeze" = 1, "honey" = 1, "thermite" = 1, "infernite" = 1)
+			result_amount = 5
+			mix_phrase = "The Sea4 hisses as it starts to form then emits a faint buzzing, huh."
+			mix_sound = 'sound/misc/fuse.ogg'
 
 
 
