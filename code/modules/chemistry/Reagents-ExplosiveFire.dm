@@ -923,9 +923,9 @@ datum
 			id = "sea4"
 			description = "A volatile precision blasting explosive."
 			reagent_state = SOLID
-			fluid_r = 0
-			fluid_g = 0
-			fluid_b = 55
+			fluid_r = 160
+			fluid_g = 174
+			fluid_b = 62
 			volatility = 2.5
 			transparency = 255
 			depletion_rate = 0.05
