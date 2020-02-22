@@ -918,7 +918,7 @@ datum
 						D.reagents.add_reagent("blackpowder", 5, null)
 				return
 
-		combustible/sea4
+		combustible/Z4
 			name = "sea4"
 			id = "sea4"
 			description = "A volatile precision blasting explosive."
@@ -952,42 +952,43 @@ datum
 						SPAWN_DBG(rand(5,15))
 							if(!holder || !holder.my_atom) return // runtime error fix
 							switch(our_amt)
-								if(0 to 5)
+								if(0 to 14)
 									holder.my_atom.visible_message("<b>[holder.my_atom] The sea4 buzzes!</b>")
 									if (covered.len < 5 || prob(5))
 										var/datum/effects/system/bad_smoke_spread/smoke = new /datum/effects/system/bad_smoke_spread()
 										smoke.set_up(1, 0, location)
 										smoke.start()
-									explosion(holder.my_atom, location, -1, -1, pick(0,1), 1)
-								if(6 to 40)
+									explosion(holder.my_atom, location, -1, -1, pick(0,1), 1) //unchanged from lowest BP explosion
+									if(prob(our_amt))
+										createSomeBees()
+								if(15 to 40)
 									holder.my_atom.visible_message("<b>The sea4 detonates!</b>")
-									explosion_new(holder.my_atom, location, 11,brisance=0.35)
+									explosion_new(holder.my_atom, location, 11,brisance=0.35) //pops the tile under it and busts up the surroundings
+									if(prob(our_amt))
+										createSomeBees()
 									if (covered.len > 1)
 										holder.remove_reagent(id, our_amt)
 									else
 										holder.del_reagent(id)
-								if(41 to 70)
+								if(41 to 100)
 									holder.my_atom.visible_message("<b>[holder.my_atom] The sea4 buzzes violently!</b>")
-									fireflash(location,0)
-									explosion_new(holder.my_atom, location, 50,brisance=0.5)
+									explosion_new(holder.my_atom, location, 50,brisance=0.5) //solid 3x3 detonation
 									createSomeBees()
 									if (covered.len > 1)
 										holder.remove_reagent(id, our_amt)
 									else
 										holder.del_reagent(id)
-									SPAWN_DBG(2 SECONDS)
-										createSomeBees(location)
-								if(71 to INFINITY)
+									createSomeBees(location)
+								if(101 to INFINITY) //no 5x5 in a beaker/pill. Need to try a little harder than that, bucko
 									holder.my_atom.visible_message("<span style=\"color:red\"><b>[holder.my_atom] explodes into a shower of bees!</b></span>")
-									explosion_new(holder.my_atom, location, 100,brisance=0.3)
+									explosion_new(holder.my_atom, location, 100,brisance=0.3) //about a clean 5x5 hole
 									if (covered.len > 1)
 										holder.remove_reagent(id, our_amt)
 									else
 										holder.del_reagent(id)
-									SPAWN_DBG(2 SECONDS)
-										createSomeBees(location)
-										createSomeBees(location)
-										createSomeBees(location)
+									createSomeBees(location)
+									createSomeBees(location)
+									createSomeBees(location)
 
 			reaction_obj(var/obj/O, var/volume)
 				src = null
@@ -995,14 +996,18 @@ datum
 
 			reaction_turf(var/turf/T, var/volume)
 				src = null
-				if(!istype(T, /turf/space))
-					//if(volume >= 5)
-					if(!locate(/obj/decal/cleanable/dirt) in T)
-						var/obj/decal/cleanable/dirt/D = make_cleanable(/obj/decal/cleanable/dirt,T)
-						D.name = "sea4"
-						D.desc = "Uh oh. Someone better clean this up!"
-						if(!D.reagents) D.create_reagents(10)
-						D.reagents.add_reagent("sea4", 5, null)
+				if(istype(T, /turf/simulated/wall))
+					if(!T.reagents) T.create_reagents(volume)
+					T.reagents.add_reagent("sea4", volume, null)
+				else
+					if(!istype(T, /turf/space))
+						//if(volume >= 5)
+						if(!locate(/obj/decal/cleanable/dirt) in T)
+							var/obj/decal/cleanable/dirt/D = make_cleanable(/obj/decal/cleanable/dirt,T)
+							D.name = "sea4"
+							D.desc = "Uh oh. Someone better clean this up!"
+							if(!D.reagents) D.create_reagents(10)
+							D.reagents.add_reagent("sea4", 5, null)
 				return
 
 			proc/createSomeBees(var/turf/T as turf)
