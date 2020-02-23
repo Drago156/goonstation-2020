@@ -929,7 +929,7 @@ datum
 			volatility = 2.5
 			transparency = 255
 			depletion_rate = 0.05
-			penetrates_skin = 1 // think of it as just being all over them i guess
+			penetrates_skin = 0 // this takes a trival quantity to gib outright. No. Just no.
 			var/static/reaction_count = 0
 
 			reaction_temperature(exposed_temperature, exposed_volume)
@@ -952,42 +952,46 @@ datum
 						SPAWN_DBG(rand(5,15))
 							if(!holder || !holder.my_atom) return // runtime error fix
 							switch(our_amt)
-								if(0 to 5)
-									holder.my_atom.visible_message("<b>[holder.my_atom] The sea4 buzzes!</b>")
+								if(0 to 14)
+									holder.my_atom.visible_message("<b>[holder.my_atom] buzzes!</b>")
 									if (covered.len < 5 || prob(5))
 										var/datum/effects/system/bad_smoke_spread/smoke = new /datum/effects/system/bad_smoke_spread()
 										smoke.set_up(1, 0, location)
 										smoke.start()
-									explosion(holder.my_atom, location, -1, -1, pick(0,1), 1)
-								if(6 to 40)
-									holder.my_atom.visible_message("<b>The sea4 detonates!</b>")
-									explosion_new(holder.my_atom, location, 11,brisance=0.35)
-									if (covered.len > 1)
-										holder.remove_reagent(id, our_amt)
-									else
-										holder.del_reagent(id)
-								if(41 to 70)
-									holder.my_atom.visible_message("<b>[holder.my_atom] The sea4 buzzes violently!</b>")
-									fireflash(location,0)
-									explosion_new(holder.my_atom, location, 50,brisance=0.5)
-									createSomeBees()
-									if (covered.len > 1)
-										holder.remove_reagent(id, our_amt)
-									else
-										holder.del_reagent(id)
-									SPAWN_DBG(2 SECONDS)
+									explosion(holder.my_atom, location, -1, -1, pick(0,1), 1) //unchanged from lowest BP explosion
+									if(prob(our_amt))
+										sleep(1 SECOND)
 										createSomeBees(location)
-								if(71 to INFINITY)
+								if(15 to 40)
+									holder.my_atom.visible_message("<b>[holder.my_atom] buzzes violently!</b>")
+									explosion_new(holder.my_atom, location, 11,brisance=0.35) //pops the tile under it and busts up the surroundings
+									if(prob(our_amt))
+										sleep(1 SECOND)
+										createSomeBees(location)
+									if (covered.len > 1)
+										holder.remove_reagent(id, our_amt)
+									else
+										holder.del_reagent(id)
+								if(41 to 100)
+									holder.my_atom.visible_message("<b>[holder.my_atom] explodes... or hatches?</b>")
+									explosion_new(holder.my_atom, location, 50,brisance=0.5) //solid 3x3 detonation
+									if (covered.len > 1)
+										holder.remove_reagent(id, our_amt)
+									else
+										holder.del_reagent(id)
+									sleep(1 SECOND)
+									createSomeBees(location)
+								if(101 to INFINITY) //no 5x5 in a beaker/pill. Need to try a little harder than that, bucko
 									holder.my_atom.visible_message("<span style=\"color:red\"><b>[holder.my_atom] explodes into a shower of bees!</b></span>")
-									explosion_new(holder.my_atom, location, 100,brisance=0.3)
+									explosion_new(holder.my_atom, location, 100,brisance=0.3) //about a clean 5x5 hole
 									if (covered.len > 1)
 										holder.remove_reagent(id, our_amt)
 									else
 										holder.del_reagent(id)
-									SPAWN_DBG(2 SECONDS)
-										createSomeBees(location)
-										createSomeBees(location)
-										createSomeBees(location)
+									sleep(1 SECOND)
+									createSomeBees(location)
+									createSomeBees(location)
+									createSomeBees(location)
 
 			reaction_obj(var/obj/O, var/volume)
 				src = null
@@ -995,14 +999,17 @@ datum
 
 			reaction_turf(var/turf/T, var/volume)
 				src = null
-				if(!istype(T, /turf/space))
-					//if(volume >= 5)
-					if(!locate(/obj/decal/cleanable/dirt) in T)
-						var/obj/decal/cleanable/dirt/D = make_cleanable(/obj/decal/cleanable/dirt,T)
-						D.name = "sea4"
-						D.desc = "Uh oh. Someone better clean this up!"
-						if(!D.reagents) D.create_reagents(10)
-						D.reagents.add_reagent("sea4", 5, null)
+				if(istype(T, /turf/simulated/wall))//controlled breach. Worse than thermite in just about every way, but see if I care
+					if(!T.reagents) T.create_reagents(volume)
+					T.reagents.add_reagent("sea4", volume, null)
+				else
+					if(!istype(T, /turf/space))
+						if(!locate(/obj/decal/cleanable/dirt) in T)
+							var/obj/decal/cleanable/dirt/D = make_cleanable(/obj/decal/cleanable/dirt,T)
+							D.name = "sea4"
+							D.desc = "Uh oh. Someone better clean this up!"
+							if(!D.reagents) D.create_reagents(10)
+							D.reagents.add_reagent("sea4", 5, null)
 				return
 
 			proc/createSomeBees(var/turf/T as turf)
