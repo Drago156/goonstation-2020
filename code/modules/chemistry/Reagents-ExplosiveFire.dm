@@ -960,13 +960,17 @@ datum
 										smoke.start()
 									explosion(holder.my_atom, location, -1, -1, pick(0,1), 1) //unchanged from lowest BP explosion
 									if(prob(our_amt))
-										sleep(1 SECOND)
+										sleep(3 SECOND)
 										createSomeBees(location)
+									if (covered.len > 1)
+										holder.remove_reagent(id, our_amt)
+									else
+										holder.del_reagent(id)
 								if(15 to 40)
 									holder.my_atom.visible_message("<b>[holder.my_atom] buzzes violently!</b>")
 									explosion_new(holder.my_atom, location, 11,brisance=0.35) //pops the tile under it and busts up the surroundings
 									if(prob(our_amt))
-										sleep(1 SECOND)
+										sleep(3 SECOND)
 										createSomeBees(location)
 									if (covered.len > 1)
 										holder.remove_reagent(id, our_amt)
@@ -979,7 +983,7 @@ datum
 										holder.remove_reagent(id, our_amt)
 									else
 										holder.del_reagent(id)
-									sleep(1 SECOND)
+									sleep(3 SECOND)
 									createSomeBees(location)
 								if(101 to INFINITY) //no 5x5 in a beaker/pill. Need to try a little harder than that, bucko
 									holder.my_atom.visible_message("<span style=\"color:red\"><b>[holder.my_atom] explodes into a shower of bees!</b></span>")
@@ -988,7 +992,7 @@ datum
 										holder.remove_reagent(id, our_amt)
 									else
 										holder.del_reagent(id)
-									sleep(1 SECOND)
+									sleep(3 SECOND)
 									createSomeBees(location)
 									createSomeBees(location)
 									createSomeBees(location)
