@@ -952,51 +952,51 @@ datum
 						SPAWN_DBG(rand(5,15))
 							if(!holder || !holder.my_atom) return // runtime error fix
 							switch(our_amt)
-								if(0 to 14)
+								if(0 to 9)
 									holder.my_atom.visible_message("<b>[holder.my_atom] buzzes!</b>")
 									if (covered.len < 5 || prob(5))
 										var/datum/effects/system/bad_smoke_spread/smoke = new /datum/effects/system/bad_smoke_spread()
 										smoke.set_up(1, 0, location)
 										smoke.start()
 									explosion(holder.my_atom, location, -1, -1, pick(0,1), 1) //unchanged from lowest BP explosion
-									if(prob(our_amt))
-										sleep(3 SECOND)
+									if(prob(max(1,our_amt))
+										sleep(2 SECONDS)
 										createSomeBees(location)
 									if (covered.len > 1)
 										holder.remove_reagent(id, our_amt)
 									else
 										holder.del_reagent(id)
-								if(15 to 40)
+								if(10 to 40)
 									holder.my_atom.visible_message("<b>[holder.my_atom] buzzes violently!</b>")
 									explosion_new(holder.my_atom, location, 11,brisance=0.35) //pops the tile under it and busts up the surroundings
 									if(prob(our_amt))
-										sleep(3 SECOND)
+										sleep(2 SECONDS)
 										createSomeBees(location)
 									if (covered.len > 1)
 										holder.remove_reagent(id, our_amt)
 									else
 										holder.del_reagent(id)
 								if(41 to 100)
-									holder.my_atom.visible_message("<b>[holder.my_atom] explodes... or hatches?</b>")
+									holder.my_atom.visible_message("<b>[holder.my_atom] hatches explosively!</b>")
 									explosion_new(holder.my_atom, location, 50,brisance=0.5) //solid 3x3 detonation
+									sleep(2 SECONDS)
+									createSomeBees(location)
 									if (covered.len > 1)
 										holder.remove_reagent(id, our_amt)
 									else
 										holder.del_reagent(id)
-									sleep(3 SECOND)
-									createSomeBees(location)
 								if(101 to INFINITY) //no 5x5 in a beaker/pill. Need to try a little harder than that, bucko
 									holder.my_atom.visible_message("<span style=\"color:red\"><b>[holder.my_atom] explodes into a shower of bees!</b></span>")
 									explosion_new(holder.my_atom, location, 100,brisance=0.3) //about a clean 5x5 hole
+									sleep(2 SECONDS)
+									createSomeBees(location)
+									createSomeBees(location)
+									createSomeBees(location)
 									if (covered.len > 1)
 										holder.remove_reagent(id, our_amt)
 									else
 										holder.del_reagent(id)
-									sleep(3 SECOND)
-									createSomeBees(location)
-									createSomeBees(location)
-									createSomeBees(location)
-
+                    
 			reaction_obj(var/obj/O, var/volume)
 				src = null
 				return
@@ -1020,7 +1020,6 @@ datum
 				fucking_critter_bullshit_fuckcrap_limiter(reaction_count)
 				if (!T)
 					return
-				//if (!locate(/obj/critter) in T )
 				new /obj/critter/domestic_bee/sea(T)
 
 
