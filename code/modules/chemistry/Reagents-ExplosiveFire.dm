@@ -985,7 +985,6 @@ datum
 										holder.remove_reagent(id, our_amt)
 									else
 										holder.del_reagent(id)
-									
 								if(101 to INFINITY) //no 5x5 in a beaker/pill. Need to try a little harder than that, bucko
 									holder.my_atom.visible_message("<span style=\"color:red\"><b>[holder.my_atom] explodes into a shower of bees!</b></span>")
 									explosion_new(holder.my_atom, location, 100,brisance=0.3) //about a clean 5x5 hole
@@ -997,8 +996,7 @@ datum
 										holder.remove_reagent(id, our_amt)
 									else
 										holder.del_reagent(id)
-									
-									
+                    
 			reaction_obj(var/obj/O, var/volume)
 				src = null
 				return
