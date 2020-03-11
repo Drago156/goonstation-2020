@@ -959,7 +959,7 @@ datum
 										smoke.set_up(1, 0, location)
 										smoke.start()
 									explosion(holder.my_atom, location, -1, -1, pick(0,1), 1) //unchanged from lowest BP explosion
-									if(prob(max(1,our_amt))
+									if(prob(max(1,our_amt)))
 										sleep(2 SECONDS)
 										createSomeBees(location)
 									if (covered.len > 1)
@@ -999,6 +999,9 @@ datum
                     
 			reaction_obj(var/obj/O, var/volume)
 				src = null
+				if(istype(O, /obj/machinery/door))
+					if(!O.reagents) O.create_reagents(volume)
+					O.reagents.add_reagent("sea4", min(volume,10), null)
 				return
 
 			reaction_turf(var/turf/T, var/volume)
